@@ -20,6 +20,9 @@ importers:
       element-ui:
         specifier: ^2.15.14
         version: 2.15.14(vue@2.7.16)
+      js-base64:
+        specifier: ^3.7.7
+        version: 3.7.7
       vue:
         specifier: ^2.6.14
         version: 2.7.16
@@ -2440,6 +2443,9 @@ packages:
 
   joi@17.13.1:
     resolution: {integrity: sha512-vaBlIKCyo4FCUtCm7Eu4QZd/q02bWcxfUO6YSXAZOWF6gzcLBeba8kwotUdYJjDLW8Cz8RywsSOqiNJZW0mNvg==}
+
+  js-base64@3.7.7:
+    resolution: {integrity: sha512-7rCnleh0z2CkXhH67J8K1Ytz0b2Y+yxTPL+/KOJoa20hfnVQ/3/T6W/KflYI4bRHRagNeXeU2bkNGI3v1oS/lw==}
 
   js-message@1.0.7:
     resolution: {integrity: sha512-efJLHhLjIyKRewNS9EGZ4UpI8NguuL6fKkhRxVuMmrGV2xN/0APGdQYwLFky5w9naebSZ0OwAGp0G6/2Cg90rA==}
@@ -6629,6 +6635,8 @@ snapshots:
       '@sideway/address': 4.1.5
       '@sideway/formula': 3.0.1
       '@sideway/pinpoint': 2.0.0
+
+  js-base64@3.7.7: {}
 
   js-message@1.0.7: {}
 

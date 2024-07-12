@@ -1,13 +1,6 @@
 <template>
     <div>
         <el-form :inline="true" :model="form" class="demo-form-inline">
-            <el-form-item label="选择群组">
-                <el-select v-model="form.selectedGroup" placeholder="请选择群组" @change="handleGroupChange"
-                    filterable="true">
-                    <el-option v-for="item in groupOptions" :key="item.wxid" :label="item.name" :value="item.wxid">
-                    </el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item>
                 <el-switch v-model="form.showAllTasks" active-color="#13ce66" inactive-color="#ff4949"
                     active-text="全部任务" inactive-text="未处理任务" @change="fetchTaskRecords">
@@ -94,21 +87,20 @@
 </template>
 
 <script>
-import { fetchGroupOptions, fetchTaskRecords, baseURL, checkTaskRecord, fetchPersonnelOptions, createTaskProgess, getTaskProgress, getWxMessageTypes } from '@/api';
+import { fetchTaskRecords, baseURL, checkTaskRecord, fetchPersonnelOptions, createTaskProgess, getTaskProgress, getWxMessageTypes } from '@/api';
 import { formatDateTime } from '@/utils';
 import { Message } from 'element-ui';
 
 export default {
     data() {
         return {
+            groupWxid: "",
             messageTypes: {},
             baseURL: baseURL,
             loading: false,
             form: {
-                selectedGroup: '',
                 showAllTasks: true
             },
-            groupOptions: [],
             taskRecords: [],
             currentPage: 1,
             pageSize: 10,
@@ -127,8 +119,11 @@ export default {
         };
     },
     created() {
-        this.fetchGroupOptions();
+        this.groupWxid = localStorage.getItem('group_wxid')
+        this.fetchTaskRecords();
         this.getWxMessageTypes();
+        this.loadPersonnelOptions();
+
     },
     methods: {
         async getWxMessageTypes() {
@@ -137,24 +132,16 @@ export default {
         formatDateTime(dateStr) {
             return formatDateTime(dateStr);
         },
-        async fetchGroupOptions() {
-            try {
-                this.groupOptions = (await fetchGroupOptions()).data;
-            } catch (error) {
-                console.error('Failed to fetch group options:', error);
-            }
-        },
         async fetchTaskRecords() {
-            if (this.form.selectedGroup) {
-                try {
-                    this.loading = true;
-                    const response = await fetchTaskRecords(this.form.selectedGroup, this.form.showAllTasks, this.currentPage, this.pageSize);
-                    this.taskRecords = response.data.data;
-                    this.totalRecords = response.data.count;
-                    this.loading = false;
-                } catch (error) {
-                    console.error('Failed to fetch task records:', error);
-                }
+
+            try {
+                this.loading = true;
+                const response = await fetchTaskRecords(this.groupWxid, this.form.showAllTasks, this.currentPage, this.pageSize);
+                this.taskRecords = response.data.data;
+                this.totalRecords = response.data.count;
+                this.loading = false;
+            } catch (error) {
+                console.error('Failed to fetch task records:', error);
             }
         },
         async handleCheckTaskRecord(taskRecordId, isProcessed) {
@@ -191,14 +178,10 @@ export default {
             this.addForm.taskRecordId = taskRecord.id;
             this.showAddProgessDialog = true;
         },
-        async handleGroupChange(groupWxid) {
-            this.currentPage = 1;
-            this.fetchTaskRecords();
-            this.loadPersonnelOptions(groupWxid);
-        },
-        async loadPersonnelOptions(groupWxid) {
+        async loadPersonnelOptions() {
+
             try {
-                const response = await fetchPersonnelOptions(groupWxid);
+                const response = await fetchPersonnelOptions(this.groupWxid);
                 this.personnelOptions = response.data;
             } catch (error) {
                 console.error('Failed to load personnel options:', error);

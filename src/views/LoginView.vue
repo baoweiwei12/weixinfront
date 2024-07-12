@@ -20,6 +20,7 @@
 <script>
 import { fetchLoginToken } from '@/api';
 import { Message } from 'element-ui';
+import { Base64 } from 'js-base64';
 
 export default {
     name: 'LoginView',
@@ -39,6 +40,25 @@ export default {
             },
         };
     },
+    created() {
+        const { data } = this.$route.query;
+        if (data) {
+            try {
+                const decodedData = Base64.decode(data);
+                const { username, password, groupWxid } = JSON.parse(decodedData);
+
+                if (username && password && groupWxid) {
+                    localStorage.setItem('groupWxid', groupWxid);
+                    this.$nextTick(() => {
+                        this.userLogin(username, password);
+                    });
+
+                }
+            } catch (error) {
+                console.error('Invalid encoded data:', error);
+            }
+        }
+    },
     methods: {
         handleLogin() {
             this.$refs.loginForm.validate(async valid => {
@@ -46,16 +66,26 @@ export default {
                     try {
                         const response = await fetchLoginToken(this.loginForm.username, this.loginForm.password);
                         localStorage.setItem('access_token', response.data.access_token);
+                        localStorage.setItem('user', JSON.stringify(response.data.user));
                         Message.success('登录成功');
                         this.$router.push({ path: '/' });
                     } catch (error) {
-                        console.error('登录失败，请检查用户名和密码');
+                        Message.error('登录失败，请检查用户名和密码');
                     }
                 } else {
                     Message.error('请完整填写表单');
                 }
             });
         },
+        async userLogin(username, password) {
+            try {
+                const response = await fetchLoginToken(username, password);
+                localStorage.setItem('access_token', response.data.access_token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                Message.success('登录成功');
+                this.$router.push({ path: '/UserTaskRecordView' });
+            } catch (error) { console.log(error) }
+        }
     },
 };
 </script>

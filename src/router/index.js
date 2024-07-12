@@ -5,6 +5,7 @@ import TaskPersonnelConfigView from '@/views/TaskPersonnelConfigView.vue';
 import LoginView from '@/views/LoginView.vue';
 import TaskRecordsView from '@/views/TaskRecordsView.vue';
 import JobsView from '@/views/JobsView.vue';
+import UserTaskRecordView from '@/views/UserTaskRecordView.vue';
 Vue.use(VueRouter);
 
 const routes = [
@@ -34,7 +35,13 @@ const routes = [
         name: '定时任务',
         component: JobsView
     },
+    {
+        path: '/UserTaskRecordView',
+        name: '我的任务记录',
+        component: UserTaskRecordView
+    }
 ];
+
 
 const router = new VueRouter({
     routes

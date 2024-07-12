@@ -12,11 +12,20 @@ export default {
   name: 'App',
   components: {
     IndexView,
-    LoginView
+    LoginView,
   },
   computed: {
     layoutComponent() {
-      return this.$route.path === '/login' ? 'LoginView' : 'IndexView';
+
+      console.log(this.$route.path)
+
+      const path = this.$route.path;
+      if (path === '/login') {
+        return 'LoginView';
+      } else {
+        return 'IndexView';
+      }
+
     }
   }
 }

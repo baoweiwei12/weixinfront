@@ -26,18 +26,24 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
     response => response,
     error => {
-        if (error.response && error.response.status === 401) {
-            Message.error('身份验证失败，请重新登录');
-            router.push('/login');  // 跳转到登录页面
-        }
-        else if (error.response && error.response.status === 403) {
-            Message.error('无权限，请联系管理员');
+        if (error.response) {
+            if (error.response.status === 401) {
+                Message.error(error.response.data.detail);
+                if (router.currentRoute.path !== '/login') {
+                    router.push('/login');  // 跳转到登录页面
+                }
+            } else if (error.response.status === 403) {
+                Message.error('无权限，请联系管理员');
+            } else {
+                Message.error(`${JSON.stringify(error.response.data.detail)}`);
+            }
         } else {
-            Message.error(`${JSON.stringify(error.response.data.detail)}`);
+            Message.error('请求失败，请稍后重试');
         }
         return Promise.reject(error);
     }
 );
+
 
 export const fetchLoginToken = (username, password) => {
     // 创建表单数据
@@ -148,4 +154,8 @@ export function updateJob(job_id, args, hour, minute, frequency, day_of_week, da
     return apiClient.put(`/api/scheduler/jobs/${job_id}`, {
         args, hour, minute, frequency, day_of_week, day_of_month
     });
+}
+
+export function getWxMessageTypes() {
+    return apiClient.get(`/weixin/message-type`);
 }
